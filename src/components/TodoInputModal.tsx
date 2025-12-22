@@ -1,5 +1,8 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { Modal, View, Text, StyleSheet, TextInput, TouchableOpacity, Pressable } from 'react-native';
+import { useAppDispatch, useAppSelector } from '../redux/hooks';
+import { addTodo } from '../redux/slice/TodoSlice';
+import { TodoType } from '../redux/storage/TodoStorageUtil';
 
 type Props = {
     isModalActive: boolean,
@@ -7,6 +10,10 @@ type Props = {
 };
 
 const TodoInputModal = ({ isModalActive, setModalState } : Props) : React.JSX.Element => {
+    const todoInputValueRef = useRef<string>("");
+    const dispatch = useAppDispatch();
+    const { todos, status, error} = useAppSelector((state) => state.todoState);
+
     return (
         <Modal
             visible={isModalActive}
@@ -20,13 +27,33 @@ const TodoInputModal = ({ isModalActive, setModalState } : Props) : React.JSX.El
                         <Text style={styles.todoText}>Add Todo</Text>
                     </View>
                     <View style={styles.todoInputContainer}>
-                        <TextInput style={styles.todoInput} />
+                        <TextInput 
+                            placeholder='Input todo' 
+                            style={styles.todoInput} 
+                            onChangeText={(inputText) => {
+                                todoInputValueRef.current = inputText;
+                            }} 
+                        />
                     </View>
                     <View style={styles.buttonContainer}>
-                        <TouchableOpacity activeOpacity={0.5} style={styles.cancelButton} onPress={() => { setModalState(false) }}>
+                        <TouchableOpacity
+                            activeOpacity={0.5} 
+                            style={styles.cancelButton} 
+                            onPress={() : void => { setModalState(false) }}>
                             <Text style={styles.cancelButtonText}>Cancel</Text>
                         </TouchableOpacity>
-                        <TouchableOpacity activeOpacity={0.5} style={styles.addButton}>
+                        <TouchableOpacity 
+                            activeOpacity={0.5} 
+                            style={styles.addButton}
+                            onPress={() : void => {
+                                const currentTodo: TodoType = {
+                                    _id: Date.now().toString(),
+                                    heading: todoInputValueRef.current,
+                                    isComplete: false
+                                }
+                                dispatch(addTodo(currentTodo));
+                                setModalState(false);
+                            }}>
                             <Text style={styles.addButtonText}>Add</Text>
                         </TouchableOpacity>
                     </View>

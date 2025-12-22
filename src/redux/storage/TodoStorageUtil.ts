@@ -9,38 +9,37 @@ export type TodoType = {
 
 const TODO_STORAGE_KEY = "TODO_KEY";
 
-export const addTodoInCache = async (todoItem: TodoType): Promise<void> => {
+export const addTodoInCache = async (todoItem: TodoType): Promise<TodoType[]> => {
     const currentTodoData: (string | null) = await AsyncStorage.getItem(TODO_STORAGE_KEY);
-    if (currentTodoData) {
-        const todoJsonParsedData: TodoType[] = JSON.parse(currentTodoData);
-        await AsyncStorage.setItem(TODO_STORAGE_KEY, JSON.stringify([...todoJsonParsedData, todoItem]));
-    } else {
-        console.log("Failed to add todo item in cache");
-    }
+    let todoJsonParsedData: TodoType[]
+    currentTodoData ? todoJsonParsedData = JSON.parse(currentTodoData) : todoJsonParsedData = [];
+    const postAddedTodoItems: TodoType[] = [...todoJsonParsedData, todoItem];
+    await AsyncStorage.setItem(TODO_STORAGE_KEY, JSON.stringify(postAddedTodoItems));
+    return postAddedTodoItems;
 };
 
-export const deleteTodoFromCache = async (targetId: string): Promise<boolean> => {
+export const deleteTodoFromCache = async (targetId: string): Promise<TodoType[]> => {
     const currentTodoData: (string | null) = await AsyncStorage.getItem(TODO_STORAGE_KEY);
     if (currentTodoData) {
         const todoJsonParsedData: TodoType[] = JSON.parse(currentTodoData);
         const filteredTodoItems: TodoType[] = todoJsonParsedData.filter(item => item._id !== targetId);
         await AsyncStorage.setItem(TODO_STORAGE_KEY, JSON.stringify(filteredTodoItems));
-        return true;
+        return filteredTodoItems;
     } else {
-        return false;
+        return [];
     }
 };
 
-export const editTodoFromCache = async (updatedTodo: TodoType): Promise<boolean> => {
+export const editTodoFromCache = async (updatedTodo: TodoType): Promise<TodoType[]> => {
     const targetId: string = updatedTodo._id;
     const currentTodoData: (string | null) = await AsyncStorage.getItem(TODO_STORAGE_KEY);
     if (currentTodoData) {
         const todoJsonParsedData: TodoType[] = JSON.parse(currentTodoData);
         const updatedTodoItems : TodoType[] = todoJsonParsedData.map(item => item._id === targetId ? {...item, ...updatedTodo} : item);
         await AsyncStorage.setItem(TODO_STORAGE_KEY, JSON.stringify(updatedTodoItems));
-        return true;
+        return updatedTodoItems;
     } else {
-        return false;
+        return [];
     }
 }
 
@@ -49,6 +48,17 @@ export const fetchAllTodosFromCatche = async (): Promise<TodoType[]> => {
     if (currentTodoData) {
         const todoJsonParsedData: TodoType[] = JSON.parse(currentTodoData);
         return todoJsonParsedData;
+    } else {
+        return [];
+    }
+}
+
+export const searchMatchingTodoFromCache = async (keyword: string): Promise<TodoType[]> => {
+    const currentTodoData: (string | null) = await AsyncStorage.getItem(TODO_STORAGE_KEY);
+    if(currentTodoData) {
+        const todoJsonParsedData: TodoType[] = JSON.parse(currentTodoData);
+        const searchedTododData = todoJsonParsedData.filter(item => item.heading.toLowerCase().includes(keyword.toLowerCase().trim()));
+        return searchedTododData;
     } else {
         return [];
     }
