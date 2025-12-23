@@ -1,8 +1,9 @@
-import React, { useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { Modal, View, Text, StyleSheet, TextInput, TouchableOpacity, Pressable } from 'react-native';
 import { useAppDispatch, useAppSelector } from '../redux/hooks';
 import { addTodo } from '../redux/slice/TodoSlice';
 import { TodoType } from '../redux/storage/TodoStorageUtil';
+import Toast from 'react-native-toast-message';
 
 type Props = {
     isModalActive: boolean,
@@ -13,6 +14,12 @@ const TodoInputModal = ({ isModalActive, setModalState } : Props) : React.JSX.El
     const todoInputValueRef = useRef<string>("");
     const dispatch = useAppDispatch();
     const { todos, status, error} = useAppSelector((state) => state.todoState);
+
+    useEffect(() => {
+        if(!isModalActive) {
+            todoInputValueRef.current = "";
+        }
+    }, [isModalActive]);
 
     return (
         <Modal
@@ -32,7 +39,7 @@ const TodoInputModal = ({ isModalActive, setModalState } : Props) : React.JSX.El
                             style={styles.todoInput} 
                             onChangeText={(inputText) => {
                                 todoInputValueRef.current = inputText;
-                            }} 
+                            }}
                         />
                     </View>
                     <View style={styles.buttonContainer}>
@@ -46,12 +53,23 @@ const TodoInputModal = ({ isModalActive, setModalState } : Props) : React.JSX.El
                             activeOpacity={0.5} 
                             style={styles.addButton}
                             onPress={() : void => {
-                                const currentTodo: TodoType = {
-                                    _id: Date.now().toString(),
-                                    heading: todoInputValueRef.current,
-                                    isComplete: false
+                                const currentTodoHeading = todoInputValueRef.current.trim();
+                                if(currentTodoHeading.length != 0) {
+                                    const currentTodo: TodoType = {
+                                        _id: Date.now().toString(),
+                                        heading: todoInputValueRef.current.trim(),
+                                        isComplete: false
+                                    }
+                                    dispatch(addTodo(currentTodo));
+                                } else {
+                                    Toast.show({
+                                        type: 'error',
+                                        text1: "Entered item can't be empty",
+                                        position: 'bottom',
+                                        bottomOffset: 100,
+                                        visibilityTime: 1500
+                                    });
                                 }
-                                dispatch(addTodo(currentTodo));
                                 setModalState(false);
                             }}>
                             <Text style={styles.addButtonText}>Add</Text>

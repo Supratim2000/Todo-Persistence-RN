@@ -45,7 +45,8 @@ const styles = StyleSheet.create({
         padding: 15,
         borderRadius: 10,
         elevation: 8,
-        marginVertical: 8
+        marginVertical: 8,
+        marginHorizontal: 2
     },
     todoItemHeadingText: {
         color: '#FFFFFF',
