@@ -10,6 +10,7 @@ import { TodoType } from '../redux/storage/TodoStorageUtil';
 import TodoItem from '../components/TodoItem';
 import DeleteTodoQueryModal from '../components/DeleteTodoQueryModal';
 import FlatListEmptyContent from '../components/FlatListEmptyContent';
+import TodoEditModal from '../components/TodoEditModal';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'MainScreen'>;
 
@@ -19,7 +20,9 @@ const TodoScreen = ({ navigation }: Props) : React.JSX.Element => {
 
     const [inputMode, setInputMode] = useState<boolean>(false);
     const [deleteMode, setDeleteMode] = useState<boolean>(false);
+    const [editMode, setEditMode] = useState<boolean>(false);
     const [todoIdDelete, setTodoIdDelete] = useState<string | null>(null);
+    const [editableTodo, setEditableTodo] = useState<TodoType | null>(null);
 
     useEffect(() => {
         dispatch(fetchTodos());
@@ -36,6 +39,7 @@ const TodoScreen = ({ navigation }: Props) : React.JSX.Element => {
     return (
         <View style={styles.container}>
             <TodoInputModal isModalActive={inputMode} setModalState={setInputMode} />
+            <TodoEditModal isModalActive={editMode} setModalState={setEditMode} currentEditableTodo={editableTodo} />
             <DeleteTodoQueryModal isDeletModalActive={deleteMode} setDeleteModalActiveState={setDeleteMode} todoDeleteId={todoIdDelete} deleteTodoItemFromCacheProxy={deleteTodoItemFromCacheProxy} />
             <View style={styles.todoListContainer}>
                 <FlatList<TodoType>
@@ -47,7 +51,8 @@ const TodoScreen = ({ navigation }: Props) : React.JSX.Element => {
                         <TodoItem 
                             item={item}
                             onEdit={(item: TodoType) => {
-                                console.log(item);
+                                setEditMode(true);
+                                setEditableTodo(item);
                             }}
                             onDelete={(item) => {
                                 setDeleteMode(true);
@@ -77,9 +82,7 @@ const styles = StyleSheet.create({
     },
     todoFlatListStyle: { 
         flexGrow: 1, 
-        margin: 7, 
-        borderColor: '#5f5f5fff', 
-        borderWidth: 1, 
+        margin: 7,
         borderRadius: 16, 
         overflow: 'hidden' 
     }

@@ -7,7 +7,7 @@ import Toast from 'react-native-toast-message';
 
 type Props = {
     isModalActive: boolean,
-    setModalState: (state : boolean) => void
+    setModalState: (state : boolean) => void,
 };
 
 const TodoInputModal = ({ isModalActive, setModalState } : Props) : React.JSX.Element => {
@@ -92,7 +92,9 @@ const styles = StyleSheet.create({
         backgroundColor: '#272727ff',
         width: '90%',
         borderRadius: 10,
-        overflow: 'hidden'
+        overflow: 'hidden',
+        borderWidth: 1,
+        borderColor: '#858585'
     },
     todoInput: {
         borderWidth: 1,

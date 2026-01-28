@@ -66,10 +66,12 @@ const styles = StyleSheet.create({
         backgroundColor: '#272727ff',
         width: '90%',
         borderRadius: 10,
-        overflow: 'hidden'
+        overflow: 'hidden',
+        borderWidth: 1,
+        borderColor: '#858585'
     },
     deleteHeadingContainer: {
-        backgroundColor: '#1DA1F2',
+        backgroundColor: '#ff1212ff',
         justifyContent: 'center',
         alignItems: 'center'
     },
@@ -102,7 +104,7 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: '#1496e8ff',
+        backgroundColor: '#ff1212ff',
         paddingVertical: 10
     },
     cancelButtonText: {
